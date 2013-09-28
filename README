@@ -1,0 +1,8 @@
+Given source data files that look like
+
+    1.00 Expense X
+    2.00 Expense Y
+    +10.00 Income
+
+perform one of a set of analyses on the data files and print the
+results.
