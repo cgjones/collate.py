@@ -103,27 +103,32 @@ def dataflow_of_group(g):
 
     return recurse(None, g, { }, set())
 
-def dump_group_tree(g, t):
+def dump_group_tree(g, t, depth=0):
+    anon = g.label is None
+    pfx = ';' * (2 * depth)
+
     '''Dump the dataflow tree |t| (built from |g|) as a set of
     semi-colon separated pairs "label;amount".  The data are formatted
     so as to be imported by a spreadsheet program.'''
     def print_item(i):
-        print '%s;%.2f'% (i.label, i.amount)
+        print '%s%s;%.2f'% (pfx, i.label, i.amount)
+    def print_blank():
+        print '%s;'% (pfx)
 
-    if g.label:
+    if not anon:
         total = t[g.label].item
-        print '-----;-----'
+        print '%s-----;-----'% (pfx)
         print_item(total)
-        print ';'
+        print_blank()
         for kid in g.kids:
             kid = kid if isinstance(kid, str) else kid.label
             print_item(t[kid].item)
         for i in xrange(15):
-            print ';'
+            print_blank()
 
     for kid in g.kids:
         if isinstance(kid, Group):
-            dump_group_tree(kid, t)
+            dump_group_tree(kid, t, depth + 1 if not anon else depth)
 
 def accum_line(fn, line, accum):
     '''Parse |line| into the match m and call |fn(m.groups(), accum)|.'''
